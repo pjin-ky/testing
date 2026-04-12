@@ -14,7 +14,7 @@ I'm a Security Engineer passionate about making software safer for everyone. My 
 
 ---
 
-## 🛠️ Skills
+## 🛠️ Skills 맘대로 수정하면 어떻게 될까
 
 - **Specialty:** Security Compliance
 - **Interests:** Application Security, Secure Coding, Security Audits
