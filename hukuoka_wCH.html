@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧳 후쿠오카 여행 (6/20–6/25)</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #fdf6f0; color: #1a1a1a; min-height: 100vh; }
+
+    /* 헤더 */
+    .hero {
+      background: linear-gradient(135deg, #e8603c 0%, #c0392b 60%, #922b21 100%);
+      color: #fff; padding: 2.5rem 2rem 2rem; text-align: center;
+    }
+    .hero h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; }
+    .hero p { margin-top: 0.4rem; font-size: 0.95rem; opacity: 0.85; }
+    .hero-meta { display: flex; justify-content: center; gap: 2rem; margin-top: 1.2rem; flex-wrap: wrap; }
+    .hero-meta span { font-size: 0.85rem; background: rgba(255,255,255,0.18); padding: 4px 14px; border-radius: 20px; }
+
+    /* 탭 */
+    .tabs { display: flex; overflow-x: auto; background: #fff; border-bottom: 2px solid #f0ebe4; padding: 0 1rem; gap: 2px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .tab { flex-shrink: 0; padding: 0.85rem 1.2rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; color: #888; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; white-space: nowrap; }
+    .tab:hover { color: #e8603c; }
+    .tab.active { color: #e8603c; border-bottom-color: #e8603c; }
+
+    /* 콘텐츠 */
+    .content { max-width: 860px; margin: 0 auto; padding: 1.8rem 1rem 4rem; }
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* 날짜 헤더 */
+    .day-header { margin-bottom: 1.4rem; }
+    .day-header h2 { font-size: 1.3rem; font-weight: 700; color: #1a1a1a; }
+    .day-header p { font-size: 0.85rem; color: #888; margin-top: 3px; }
+
+    /* 타임라인 */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before { content: ''; position: absolute; left: 9px; top: 6px; bottom: 0; width: 2px; background: #f0ebe4; }
+    .tl-item { position: relative; margin-bottom: 1.4rem; }
+    .tl-dot { position: absolute; left: -24px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: #e8603c; border: 2px solid #fff; box-shadow: 0 0 0 2px #e8603c; }
+    .tl-item.minor .tl-dot { background: #ddd; box-shadow: 0 0 0 2px #ddd; }
+    .tl-time { font-size: 0.78rem; font-weight: 700; color: #e8603c; letter-spacing: 0.5px; margin-bottom: 3px; }
+    .tl-item.minor .tl-time { color: #aaa; }
+    .tl-title { font-size: 1rem; font-weight: 600; color: #1a1a1a; }
+    .tl-sub { font-size: 0.85rem; color: #666; margin-top: 4px; line-height: 1.6; }
+    .tl-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+    .tag { font-size: 0.75rem; padding: 2px 9px; border-radius: 12px; font-weight: 500; }
+    .tag-loc { background: #fff3e0; color: #e65100; }
+    .tag-food { background: #fce4ec; color: #c62828; }
+    .tag-tip { background: #e8f5e9; color: #2e7d32; }
+    .tag-cost { background: #e3f2fd; color: #1565c0; }
+    .tag-transport { background: #f3e5f5; color: #6a1b9a; }
+
+    /* 카드 */
+    .card { background: #fff; border: 1px solid #ede8e0; border-radius: 12px; padding: 1.2rem 1.4rem; margin-bottom: 1rem; }
+    .card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.8rem; color: #1a1a1a; display: flex; align-items: center; gap: 6px; }
+
+    /* 예약 테이블 */
+    .res-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .res-table th { background: #fdf0e8; color: #c0392b; font-weight: 600; padding: 8px 12px; text-align: left; border-bottom: 1px solid #ede8e0; }
+    .res-table td { padding: 9px 12px; border-bottom: 1px solid #f5f0ea; vertical-align: middle; }
+    .res-table tr:last-child td { border-bottom: none; }
+    .status { display: inline-block; font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+    .status-done { background: #d4edda; color: #155724; }
+    .status-paid { background: #cce5ff; color: #004085; }
+    .status-todo { background: #f8d7da; color: #721c24; }
+    .status-plan { background: #fff3cd; color: #856404; }
+
+    /* 준비물 */
+    .pack-section { margin-bottom: 1rem; }
+    .pack-person { font-size: 0.8rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; padding-bottom: 4px; border-bottom: 1px solid #f0ebe4; }
+    .pack-list { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .pack-list li { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: #444; }
+    .pack-list li input[type="checkbox"] { accent-color: #e8603c; width: 15px; height: 15px; cursor: pointer; flex-shrink: 0; }
+    .pack-list li.checked label { text-decoration: line-through; color: #bbb; }
+
+    /* 메모 */
+    .memo-box { background: #fffbf5; border-left: 3px solid #e8603c; border-radius: 0 8px 8px 0; padding: 0.8rem 1rem; font-size: 0.85rem; color: #555; line-height: 1.7; margin-top: 0.8rem; }
+    .memo-box strong { color: #e8603c; }
+
+    /* 빈 날 */
+    .empty-day { text-align: center; padding: 3rem 0; color: #ccc; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>🧳 후쿠오카 여행</h1>
+  <p>2026년 6월 20일 (토) — 6월 25일 (목) · 5박 6일</p>
+  <div class="hero-meta">
+    <span>✈️ 인천 → 후쿠오카</span>
+    <span>👥 효진 · 창현</span>
+    <span>🏨 프레지던트 호텔 + 원스호텔</span>
+  </div>
+</div>
+
+<!-- 탭 -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('d620')">6/20 토</div>
+  <div class="tab" onclick="switchTab('d621')">6/21 일</div>
+  <div class="tab" onclick="switchTab('d622')">6/22 월</div>
+  <div class="tab" onclick="switchTab('d623')">6/23 화</div>
+  <div class="tab" onclick="switchTab('d624')">6/24 수</div>
+  <div class="tab" onclick="switchTab('d625')">6/25 목</div>
+  <div class="tab" onclick="switchTab('booking')">📋 예약정보</div>
+  <div class="tab" onclick="switchTab('packing')">🎒 준비물</div>
+</div>
+
+<div class="content">
+
+  <!-- 6/20 -->
+  <div class="panel active" id="d620">
+    <div class="day-header">
+      <h2>6월 20일 (토) — 도착의 날 🛬</h2>
+      <p>인천 출발 → 후쿠오카 도착 · 하카타 체크인 · 첫 저녁</p>
+    </div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">20:00</div>
+        <div class="tl-title">🏨 숙소 체크인</div>
+        <div class="tl-sub">프레지던트 호텔 하카타<br>하카타역 인근 · 도보 이동 가능</div>
+        <div class="tl-tags">
+          <span class="tag tag-loc">하카타</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">21:00</div>
+        <div class="tl-title">🍲 저녁 — 하카타 모츠나베 마에다야 총본점</div>
+        <div class="tl-sub">숙소에서 도보 15분<br>2 Chome-9-20 Hakataekihigashi, Hakata Ward</div>
+        <div class="tl-tags">
+          <span class="tag tag-food">저녁</span>
+          <span class="tag tag-cost">7,000엔</span>
+          <span class="tag tag-loc">하카타</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6/21 -->
+  <div class="panel" id="d621">
+    <div class="day-header">
+      <h2>6월 21일 (일) — 시모노세키 당일치기 🚢</h2>
+      <p>하카타 → 시모노세키 → 모지코 → 기타큐슈 → 하카타</p>
+    </div>
+    <div class="memo-box">
+      <strong>루트 요약</strong> 총 이동거리 약 100km · 규슈 북쪽 해안선을 따라 한 바퀴!
+    </div>
+    <br>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">09:00</div>
+        <div class="tl-title">🚄 시모노세키 이동</div>
+        <div class="tl-sub">신칸센 타고 고쿠라역 → 페리로 시모노세키<br>관문해협 5~10분 도하 · 바다에서 간몬대교 뷰 압권</div>
+        <div class="tl-tags">
+          <span class="tag tag-transport">신칸센 + 페리</span>
+          <span class="tag tag-cost">편도 약 2,200~2,500엔</span>
+          <span class="tag tag-tip">현금 필수!</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">11:00</div>
+        <div class="tl-title">🍣 가라토 이치바 — 아침 겸 스시</div>
+        <div class="tl-sub">시모노세키 = 복어의 도시! 가라토 이치바 직판 스시<br>초밥 1개 300~500엔 · 금·토·일 10시~15시 (일요일 9시 오픈)<br>📍 〒750-0005 야마구치현 시모노세키시 가라토초 5-50</div>
+        <div class="tl-tags">
+          <span class="tag tag-food">아침/스시</span>
+          <span class="tag tag-cost">1인 2,000~3,000엔</span>
+          <span class="tag tag-tip">일요일 방문 완벽 타이밍!</span>
+        </div>
+      </div>
+      <div class="tl-item minor">
+        <div class="tl-dot"></div>
+        <div class="tl-time">11:30</div>
+        <div class="tl-title">⛩️ 아카마신궁 + 간몬해저터널</div>
+        <div class="tl-sub">새하얀 건물과 붉은 기둥의 독특한 신사<br>간몬해저터널은 도보로 혼슈-규슈 사이 통과 · 무료</div>
+        <div class="tl-tags">
+          <span class="tag tag-tip">해저터널 무료</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">12:00</div>
+        <div class="tl-title">🏛️ 모지코 레트로 구경</div>
+        <div class="tl-sub">메이지~다이쇼 시대 건축물 보존 거리<br>구 모지미츠이 클럽, 모지코역 건물 · 바나나 과자 챙기기!<br>시모노세키에서 도보 약 50분 OR 페리 5분</div>
+        <div class="tl-tags">
+          <span class="tag tag-loc">모지코</span>
+          <span class="tag tag-transport">도보 50분 또는 페리</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">13:30</div>
+        <div class="tl-title">🍜 점심 — 라멘 이나세야</div>
+        <div class="tl-sub">기타큐슈(고쿠라) 현지인 단골 츠케멘 라멘집<br>진한 해산물 국물 + 쫄깃한 면<br>📍 1-3-7 교마치, 고쿠라기타구 · 점심 11~15시</div>
+        <div class="tl-tags">
+          <span class="tag tag-food">점심/라멘</span>
+          <span class="tag tag-cost">900~1,200엔</span>
+          <span class="tag tag-loc">기타큐슈</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">15:00</div>
+        <div class="tl-title">🛍️ 하카타 — 캐널시티 & 한큐백화점</div>
+        <div class="tl-sub">운하 위 복합쇼핑몰 · 분수쇼 매 시간<br>버스정류장 위 스티커 사진 📸<br>한큐백화점 옥상정원에서 후쿠오카 노을 감상 🌆</div>
+        <div class="tl-tags">
+          <span class="tag tag-loc">하카타</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">18:00</div>
+        <div class="tl-title">🍔 저녁 — 카와미야 함바그</div>
+        <div class="tl-sub">현지인이 줄 서는 수제 함바그 맛집<br>웨이팅 선등록 후 캐널시티 구경하다 오기</div>
+        <div class="tl-tags">
+          <span class="tag tag-food">저녁</span>
+          <span class="tag tag-cost">1,500~2,000엔</span>
+          <span class="tag tag-tip">웨이팅 앱 활용 추천</span>
+        </div>
+      </div>
+    </div>
+    <div class="memo-box">
+      <strong>💡 오늘의 포인트</strong><br>
+      1. 가라토 이치바 스시는 <strong>일요일 오전에만</strong> 직판 — 타이밍 딱!<br>
+      2. 간몬해저터널 도보 통과는 <strong>무료</strong> (근처 편의점 현금 인출 가능)<br>
+      3. 카와미야 함바그는 <strong>오픈 직후 또는 웨이팅 앱</strong> 활용 추천
+    </div>
+  </div>
+
+  <!-- 6/22 -->
+  <div class="panel" id="d622">
+    <div class="day-header">
+      <h2>6월 22일 (월)</h2>
+      <p>일정 미정</p>
+    </div>
+    <div class="empty-day">📝 아직 일정이 없어요.<br>다자이후, 오호리공원, 쇼핑 등 여유롭게 계획해보세요!</div>
+  </div>
+
+  <!-- 6/23 -->
+  <div class="panel" id="d623">
+    <div class="day-header">
+      <h2>6월 23일 (화) — 유후인 + 하카타 관광 🌸</h2>
+      <p>하카타 아침 산책 → 유후인 온천 → 원스호텔 체크인</p>
+    </div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">09:00</div>
+        <div class="tl-title">☕ 라떼 + 하카타 아침 산책</div>
+        <div class="tl-sub">푸글렌 후쿠오카 or 일포르노 크로아상<br>하카타역 주변 골목 산책</div>
+        <div class="tl-tags">
+          <span class="tag tag-loc">하카타</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">10:00</div>
+        <div class="tl-title">🏯 캐널시티 + 구시다신사</div>
+        <div class="tl-sub">라쿠스이엔 정원 300엔 / 구시다신사 무료<br>야마카사 수레 전시 · 나카스 골목 탐방</div>
+        <div class="tl-tags">
+          <span class="tag tag-loc">하카타/나카스</span>
+          <span class="tag tag-cost">라쿠스이엔 300엔</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">11:30</div>
+        <div class="tl-title">🍳 점심 — 텟판 가야 오코노미야끼</div>
+        <div class="tl-sub">★ 오늘의 핵심 점심!<br>하카타역 도보 10분 · 현지인 노포 · 한글메뉴 없음<br>영업: 월~토 11:30~14:00 <strong>(일요일 휴무 주의 ✅)</strong></div>
+        <div class="tl-tags">
+          <span class="tag tag-food">점심/오코노미야끼</span>
+          <span class="tag tag-tip">일 휴무 — 화요일 방문 OK</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">14:00</div>
+        <div class="tl-title">🛍️ 텐진 + 카와바타 상점가</div>
+        <div class="tl-sub">이와타야 / 칼디 / GU 마지막 체크<br>130년 역사 카와바타 아케이드 상점가</div>
+        <div class="tl-tags">
+          <span class="tag tag-loc">텐진</span>
+        </div>
+      </div>
+      <div class="tl-item minor">
+        <div class="tl-dot"></div>
+        <div class="tl-time">15:00</div>
+        <div class="tl-title">🏨 원스호텔 후쿠오카 체크인</div>
+        <div class="tl-sub">체크인 15시 · 체크아웃 10시<br>📍 〒810-0054 후쿠오카시 주오구 이마가와 1-3-3</div>
+        <div class="tl-tags">
+          <span class="tag tag-loc">텐진 근처</span>
+          <span class="tag tag-tip">예약완료 ✅</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">17:30</div>
+        <div class="tl-title">🍢 저녁 1차 — 야키토리 노부나가혼케</div>
+        <div class="tl-sub">하카타역 뒤편 현지인 노포<br>야키토리 150~380엔 · 퇴근 회사원들과 맥주 한 잔</div>
+        <div class="tl-tags">
+          <span class="tag tag-food">저녁/야키토리</span>
+          <span class="tag tag-loc">하카타</span>
+        </div>
+      </div>
+    </div>
+    <div class="memo-box">
+      <strong>숙소 이동 메모</strong> 하카타 → 유후인 당일 온천 코스 가능 (버스 약 1시간 30분)
+    </div>
+  </div>
+
+  <!-- 6/24 -->
+  <div class="panel" id="d624">
+    <div class="day-header">
+      <h2>6월 24일 (수)</h2>
+      <p>일정 미정</p>
+    </div>
+    <div class="empty-day">📝 아직 일정이 없어요.<br>모모치해변, 후쿠오카 타워, 오호리공원 등 추천!</div>
+  </div>
+
+  <!-- 6/25 -->
+  <div class="panel" id="d625">
+    <div class="day-header">
+      <h2>6월 25일 (목) — 귀국의 날 ✈️</h2>
+      <p>원스호텔 체크아웃 (10:00) → 후쿠오카 공항 → 인천</p>
+    </div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">~10:00</div>
+        <div class="tl-title">🏨 원스호텔 체크아웃</div>
+        <div class="tl-sub">체크아웃 마감 10시</div>
+      </div>
+      <div class="tl-item minor">
+        <div class="tl-dot"></div>
+        <div class="tl-time">이후</div>
+        <div class="tl-title">🛍️ 마지막 쇼핑 / 공항 면세점</div>
+        <div class="tl-sub">하카타역 직결 공항 (지하철 5분) — 여유롭게 이동 가능</div>
+        <div class="tl-tags">
+          <span class="tag tag-transport">지하철 5분</span>
+        </div>
+      </div>
+    </div>
+    <div class="memo-box">
+      기타 메모: (추가로 적을 내용 있으면 여기에)
+    </div>
+  </div>
+
+  <!-- 예약정보 -->
+  <div class="panel" id="booking">
+    <div class="day-header">
+      <h2>📋 예약 / 기본정보</h2>
+    </div>
+    <div class="card">
+      <h3>🏨 숙소</h3>
+      <table class="res-table">
+        <thead>
+          <tr><th>항목</th><th>예약명</th><th>날짜</th><th>메모</th><th>상태</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>숙소 (1~2박)</td>
+            <td>프레지던트 호텔 하카타</td>
+            <td>6/20 ~</td>
+            <td>하카타역 근처</td>
+            <td><span class="status status-done">예약완료</span></td>
+          </tr>
+          <tr>
+            <td>숙소 (3~5박)</td>
+            <td>원스호텔 후쿠오카</td>
+            <td>6/23 ~ 6/25</td>
+            <td>체크인 15시 · 체크아웃 10시</td>
+            <td><span class="status status-done">예약완료</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h3>💡 기본 정보</h3>
+      <table class="res-table">
+        <thead>
+          <tr><th>항목</th><th>내용</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>여행 기간</td><td>2026년 6월 20일 (토) — 6월 25일 (목) · 5박 6일</td></tr>
+          <tr><td>출발/도착</td><td>인천 ↔ 후쿠오카</td></tr>
+          <tr><td>멤버</td><td>효진, 창현</td></tr>
+          <tr><td>주 교통</td><td>지하철 · 버스 · 신칸센(시모노세키 이동 시)</td></tr>
+          <tr><td>환전</td><td>엔화 현금 필수 (카라토 이치바, 관문 페리 등)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 준비물 -->
+  <div class="panel" id="packing">
+    <div class="day-header">
+      <h2>🎒 준비물 체크리스트</h2>
+    </div>
+    <div class="card">
+      <h3>👤 효진</h3>
+      <div class="pack-section">
+        <ul class="pack-list" id="pack-hyojin">
+          <li><input type="checkbox" id="h1" onchange="saveCheck(this)"><label for="h1">여권</label></li>
+          <li><input type="checkbox" id="h2" onchange="saveCheck(this)"><label for="h2">항공권 (인쇄 또는 앱)</label></li>
+          <li><input type="checkbox" id="h3" onchange="saveCheck(this)"><label for="h3">엔화 현금</label></li>
+          <li><input type="checkbox" id="h4" onchange="saveCheck(this)"><label for="h4">트래블월렛 / 해외카드</label></li>
+          <li><input type="checkbox" id="h5" onchange="saveCheck(this)"><label for="h5">여행자보험</label></li>
+          <li><input type="checkbox" id="h6" onchange="saveCheck(this)"><label for="h6">스킨케어 (세안/로션)</label></li>
+          <li><input type="checkbox" id="h7" onchange="saveCheck(this)"><label for="h7">선크림</label></li>
+          <li><input type="checkbox" id="h8" onchange="saveCheck(this)"><label for="h8">화장품 파우치</label></li>
+          <li><input type="checkbox" id="h9" onchange="saveCheck(this)"><label for="h9">옷 (6벌)</label></li>
+          <li><input type="checkbox" id="h10" onchange="saveCheck(this)"><label for="h10">속옷 / 양말</label></li>
+          <li><input type="checkbox" id="h11" onchange="saveCheck(this)"><label for="h11">편한 운동화</label></li>
+          <li><input type="checkbox" id="h12" onchange="saveCheck(this)"><label for="h12">샴푸 / 바디워시</label></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h3>👤 창현</h3>
+      <div class="pack-section">
+        <ul class="pack-list" id="pack-changhyun">
+          <li><input type="checkbox" id="c1" onchange="saveCheck(this)"><label for="c1">여권</label></li>
+          <li><input type="checkbox" id="c2" onchange="saveCheck(this)"><label for="c2">항공권 (인쇄 또는 앱)</label></li>
+          <li><input type="checkbox" id="c3" onchange="saveCheck(this)"><label for="c3">엔화 현금</label></li>
+          <li><input type="checkbox" id="c4" onchange="saveCheck(this)"><label for="c4">트래블월렛 / 해외카드</label></li>
+          <li><input type="checkbox" id="c5" onchange="saveCheck(this)"><label for="c5">보조배터리</label></li>
+          <li><input type="checkbox" id="c6" onchange="saveCheck(this)"><label for="c6">충전기 (USB-C)</label></li>
+          <li><input type="checkbox" id="c7" onchange="saveCheck(this)"><label for="c7">이어폰</label></li>
+          <li><input type="checkbox" id="c8" onchange="saveCheck(this)"><label for="c8">옷 (6벌)</label></li>
+          <li><input type="checkbox" id="c9" onchange="saveCheck(this)"><label for="c9">속옷 / 양말</label></li>
+          <li><input type="checkbox" id="c10" onchange="saveCheck(this)"><label for="c10">편한 운동화</label></li>
+          <li><input type="checkbox" id="c11" onchange="saveCheck(this)"><label for="c11">상비약 (두통, 소화제)</label></li>
+          <li><input type="checkbox" id="c12" onchange="saveCheck(this)"><label for="c12">우산 / 우비</label></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h3>🤝 공통</h3>
+      <ul class="pack-list">
+        <li><input type="checkbox" id="s1" onchange="saveCheck(this)"><label for="s1">포켓 와이파이 / 유심</label></li>
+        <li><input type="checkbox" id="s2" onchange="saveCheck(this)"><label for="s2">IC 카드 (스이카/nimoca)</label></li>
+        <li><input type="checkbox" id="s3" onchange="saveCheck(this)"><label for="s3">규슈 레일패스</label></li>
+        <li><input type="checkbox" id="s4" onchange="saveCheck(this)"><label for="s4">숙소 예약 확인서</label></li>
+        <li><input type="checkbox" id="s5" onchange="saveCheck(this)"><label for="s5">카메라 / 충전기</label></li>
+        <li><input type="checkbox" id="s6" onchange="saveCheck(this)"><label for="s6">스티커 사진 소품</label></li>
+      </ul>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<script>
+  function switchTab(id) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+
+  function saveCheck(el) {
+    const state = {};
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      state[cb.id] = cb.checked;
+    });
+    localStorage.setItem('fukuoka_pack', JSON.stringify(state));
+  }
+
+  (function loadChecks() {
+    const data = localStorage.getItem('fukuoka_pack');
+    if (!data) return;
+    const state = JSON.parse(data);
+    Object.entries(state).forEach(([id, checked]) => {
+      const el = document.getElementById(id);
+      if (el) el.checked = checked;
+    });
+  })();
+</script>
+</body>
+</html>
