@@ -1,271 +1,130 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🧳 후쿠오카 여행 (6/20–6/25)</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', sans-serif; background: #fdf6f0; color: #1a1a1a; min-height: 100vh; }
-    .hero { background: linear-gradient(135deg, #e8603c 0%, #c0392b 60%, #922b21 100%); color: #fff; padding: 2.5rem 2rem 2rem; text-align: center; }
-    .hero h1 { font-size: 2rem; font-weight: 700; }
-    .hero p { margin-top: 0.4rem; font-size: 0.95rem; opacity: 0.85; }
-    .hero-meta { display: flex; justify-content: center; gap: 2rem; margin-top: 1.2rem; flex-wrap: wrap; }
-    .hero-meta span { font-size: 0.85rem; background: rgba(255,255,255,0.18); padding: 4px 14px; border-radius: 20px; }
-    .updated { font-size: 0.75rem; opacity: 0.6; margin-top: 0.5rem; }
-    .tabs { display: flex; overflow-x: auto; background: #fff; border-bottom: 2px solid #f0ebe4; padding: 0 1rem; gap: 2px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-    .tab { flex-shrink: 0; padding: 0.85rem 1.2rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; color: #888; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; white-space: nowrap; }
-    .tab:hover { color: #e8603c; }
-    .tab.active { color: #e8603c; border-bottom-color: #e8603c; }
-    .content { max-width: 860px; margin: 0 auto; padding: 1.8rem 1rem 4rem; }
-    .panel { display: none; }
-    .panel.active { display: block; }
-    .day-header { margin-bottom: 1.4rem; }
-    .day-header h2 { font-size: 1.3rem; font-weight: 700; }
-    .day-header p { font-size: 0.85rem; color: #888; margin-top: 3px; }
-    .timeline { position: relative; padding-left: 28px; }
-    .timeline::before { content: ''; position: absolute; left: 9px; top: 6px; bottom: 0; width: 2px; background: #f0ebe4; }
-    .tl-item { position: relative; margin-bottom: 1.4rem; }
-    .tl-dot { position: absolute; left: -24px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: #e8603c; border: 2px solid #fff; box-shadow: 0 0 0 2px #e8603c; }
-    .tl-item.minor .tl-dot { background: #ddd; box-shadow: 0 0 0 2px #ddd; }
-    .tl-time { font-size: 0.78rem; font-weight: 700; color: #e8603c; letter-spacing: 0.5px; margin-bottom: 3px; }
-    .tl-item.minor .tl-time { color: #aaa; }
-    .tl-title { font-size: 1rem; font-weight: 600; }
-    .tl-sub { font-size: 0.85rem; color: #666; margin-top: 4px; line-height: 1.6; }
-    .tl-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
-    .tag { font-size: 0.75rem; padding: 2px 9px; border-radius: 12px; font-weight: 500; }
-    .tag-loc { background: #fff3e0; color: #e65100; }
-    .tag-food { background: #fce4ec; color: #c62828; }
-    .tag-tip { background: #e8f5e9; color: #2e7d32; }
-    .tag-cost { background: #e3f2fd; color: #1565c0; }
-    .tag-transport { background: #f3e5f5; color: #6a1b9a; }
-    .card { background: #fff; border: 1px solid #ede8e0; border-radius: 12px; padding: 1.2rem 1.4rem; margin-bottom: 1rem; }
-    .card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.8rem; }
-    .res-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-    .res-table th { background: #fdf0e8; color: #c0392b; font-weight: 600; padding: 8px 12px; text-align: left; border-bottom: 1px solid #ede8e0; }
-    .res-table td { padding: 9px 12px; border-bottom: 1px solid #f5f0ea; vertical-align: middle; }
-    .res-table tr:last-child td { border-bottom: none; }
-    .status { display: inline-block; font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
-    .status-done { background: #d4edda; color: #155724; }
-    .status-paid { background: #cce5ff; color: #004085; }
-    .status-todo { background: #f8d7da; color: #721c24; }
-    .status-plan { background: #fff3cd; color: #856404; }
-    .pack-list { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    .pack-list li { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: #444; }
-    .pack-list li input[type="checkbox"] { accent-color: #e8603c; width: 15px; height: 15px; cursor: pointer; flex-shrink: 0; }
-    .pack-list li.checked label { text-decoration: line-through; color: #bbb; }
-    .memo-box { background: #fffbf5; border-left: 3px solid #e8603c; border-radius: 0 8px 8px 0; padding: 0.8rem 1rem; font-size: 0.85rem; color: #555; line-height: 1.7; margin-bottom: 1rem; }
-    .memo-box strong { color: #e8603c; }
-    .empty-day { text-align: center; padding: 3rem 0; color: #ccc; font-size: 0.9rem; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧳 후쿠오카 여행 (6/20–6/25)</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:#f5f4f0;color:#1a1a1a;line-height:1.6}
+.hero{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);color:#fff;padding:3rem 2rem;text-align:center}
+.hero h1{font-size:2rem;font-weight:700;margin-bottom:.5rem}
+.hero p{opacity:.75;font-size:.95rem}
+.container{max-width:860px;margin:0 auto;padding:1.5rem 1rem}
+.day{background:#fff;border-radius:12px;margin-bottom:1.5rem;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.day-header{padding:1rem 1.25rem;display:flex;align-items:center;gap:12px}
+.day-title{font-size:1rem;font-weight:600}
+.day-sub{font-size:.8rem;opacity:.7;margin-top:2px}
+.badge{margin-left:auto;font-size:.7rem;padding:3px 10px;border-radius:999px;white-space:nowrap;font-weight:500}
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+th{padding:7px 12px;text-align:left;font-weight:500;background:#f8f8f6;color:#666;border-bottom:1px solid #eee;font-size:.75rem}
+td{padding:8px 12px;border-bottom:1px solid #f0f0ee;vertical-align:top}
+tr:last-child td{border-bottom:none}
+.time{color:#888;white-space:nowrap;width:70px}
+.place{font-weight:500}
+.memo{color:#555;font-size:.78rem;line-height:1.55}
+.budget{color:#2d7a4f;font-weight:500;white-space:nowrap;font-size:.78rem}
+.tag{display:inline-block;font-size:.68rem;padding:1px 6px;border-radius:4px;margin-right:4px;font-weight:500}
+.t-food{background:#fef3e2;color:#b45309}
+.t-walk{background:#e0f2fe;color:#0369a1}
+.t-shop{background:#f0fdf4;color:#166534}
+.t-transit{background:#f5f3ff;color:#6d28d9}
+.t-hotel{background:#fdf2f8;color:#9d174d}
+.warn{background:#fef2f2;color:#dc2626;font-size:.7rem;padding:2px 6px;border-radius:4px;display:inline-block;margin-top:3px}
+.note{background:#fffbeb;border-left:3px solid #f59e0b;padding:8px 12px;font-size:.78rem;color:#555}
+.outfit{font-size:.72rem;color:#9333ea;background:#faf5ff;padding:2px 8px;border-radius:4px;display:inline-block;margin-top:4px}
+.chip{display:inline-block;background:#e0f2fe;color:#0369a1;font-size:.7rem;padding:2px 8px;border-radius:4px;margin-top:3px}
+a{color:#0369a1}
+</style>
 </head>
 <body>
-  <div class="hero">
-    <h1>🧳 후쿠오카 여행</h1>
-    <p>2026년 6월 20일 (토) — 6월 25일 (목) · 5박 6일</p>
-    <div class="hero-meta">
-      <span>✈️ 인천 → 후쿠오카</span>
-      <span>👥 효진 · 창현</span>
-      <span>🏨 프레지던트 호텔 + 원스호텔</span>
-    </div>
-    <p class="updated">마지막 업데이트: 2026-05-02 02:39 UTC</p>
-  </div>
-
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('d620')">6/20 토</div>
-<div class="tab" onclick="switchTab('d621')">6/21 일</div>
-<div class="tab" onclick="switchTab('d622')">6/22 월</div>
-<div class="tab" onclick="switchTab('d623')">6/23 화</div>
-<div class="tab" onclick="switchTab('d624')">6/24 수</div>
-<div class="tab" onclick="switchTab('d625')">6/25 목</div>
-<div class="tab" onclick="switchTab('booking')">📋 예약정보</div>
-<div class="tab" onclick="switchTab('packing')">🎒 준비물</div>
-
-  </div>
-
-  <div class="content">
-    <div class="panel active" id="d620"><div class="day-header"><h2>6월 20일 (토)</h2><p>도착의 날 🛬</p></div><div class="timeline">
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-time">20:00</div>
-        <div class="tl-title">숙소체크인 — 프레지던트 호텔 하카타</div>
-        
-        <div class="tl-tags"><span class="tag tag-loc">하카타</span></div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-time">21:00</div>
-        <div class="tl-title">모츠나베 — 하카타 모츠나베 마에다야 총본점</div>
-        <div class="tl-sub">7000엔<br>2 Chome-9-20 Hakataekihigashi, Hakata Ward, Fukuoka, 812-0013 일본<br>도보 15분</div>
-        <div class="tl-tags"><span class="tag tag-loc">하카타</span><span class="tag tag-cost">7000엔</span></div>
-      </div></div></div>
-<div class="panel" id="d621"><div class="day-header"><h2>6월 21일 (일)</h2><p>시모노세키 당일치기 🚢</p></div><div class="timeline"><div class="memo-box"><strong>메모</strong> 하카타-시모노세키/ 시모노세키-모지코-기타규슈-하카타</div>
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-time">9:00</div>
-        <div class="tl-title">시모노세키 이동 — 스시 먹기(아침)</div>
-        <div class="tl-sub">신칸센 타고 고쿠라역 → 페리타고 시모노세키<br>현금 필수<br>편도 약 2,200~2,500엔</div>
-        <div class="tl-tags"><span class="tag tag-loc">근교(유후인/벳푸 등)</span><span class="tag tag-cost">편도 약 2,200~2,500엔</span></div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-time">11:00</div>
-        <div class="tl-title">시모노세키 — 스시 먹기(아침)
-아카마신궁 + 간몬해저터널</div>
-        <div class="tl-sub">3000엔</div>
-        <div class="tl-tags"><span class="tag tag-loc">근교(유후인/벳푸 등)</span><span class="tag tag-cost">3000엔</span></div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-time">12:00</div>
-        <div class="tl-title">모지코 이동 — (모지코 레트로 구경)</div>
-        <div class="tl-sub">도보 이동 50분</div>
-        <div class="tl-tags"><span class="tag tag-loc">근교(유후인/벳푸 등)</span></div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-time">13:30</div>
-        <div class="tl-title">기타큐슈 이동 — 점심 먹기(라멘 이나세야)</div>
-        <div class="tl-sub">3000엔</div>
-        <div class="tl-tags"><span class="tag tag-loc">근교(유후인/벳푸 등)</span><span class="tag tag-cost">3000엔</span></div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-time">15:00</div>
-        <div class="tl-title">하카타역 — 캐널시티 구경
-버스정류장 위에 스티커 사진 찍기
-한큐백화점 옥상정원에서 노을 구경</div>
-        
-        <div class="tl-tags"><span class="tag tag-loc">근교(유후인/벳푸 등)</span></div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        <div class="tl-time">18:00</div>
-        <div class="tl-title">하카타역 — 저녁 먹기(카와미야 함바그)</div>
-        <div class="tl-sub">웨이팅 걸어두고 다른데 구경하다 오기</div>
-        <div class="tl-tags"><span class="tag tag-loc">근교(유후인/벳푸 등)</span></div>
-      </div></div></div>
-<div class="panel" id="d622"><div class="day-header"><h2>6월 22일 (월)</h2></div><div class="timeline">
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        
-        <div class="tl-title"></div>
-        
-        
-      </div></div></div>
-<div class="panel" id="d623"><div class="day-header"><h2>6월 23일 (화)</h2><p>유후인 + 하카타 관광 🌸</p></div><div class="timeline">
-      <div class="tl-item">
-        <div class="tl-dot"></div>
-        
-        <div class="tl-title">숙소 이동/유후인</div>
-        <div class="tl-sub">하카타-유후인/유후인 당일온천/하카타</div>
-        
-      </div></div></div>
-<div class="panel" id="d624"><div class="day-header"><h2>6월 24일 (수)</h2></div><div class="empty-day">📝 아직 일정이 없어요.</div></div>
-<div class="panel" id="d625"><div class="day-header"><h2>6월 25일 (목)</h2><p>귀국의 날 ✈️</p></div><div class="empty-day">📝 아직 일정이 없어요.</div></div>
-<div class="panel" id="booking">
-    <div class="day-header"><h2>📋 예약 / 기본정보</h2></div>
-    <div class="card">
-      <h3>📋 예약 목록</h3>
-      <table class="res-table">
-        <thead><tr><th>항목</th><th>예약명</th><th>날짜</th><th>메모</th><th>비용</th><th>상태</th></tr></thead>
-        <tbody>
-          <tr>
-            <td>숙소</td>
-            <td>프레지던트 호텔 하카다</td>
-            <td>2026-06-20 ~ 2026-06-23</td>
-            <td>체크아웃 11시</td>
-            <td></td>
-            <td><span class="status status-done">예약완료</span></td>
-          </tr>
-          <tr>
-            <td>항공권</td>
-            <td>A8YLVG</td>
-            <td>2026-06-20 ~ 2026-06-25</td>
-            <td>18:20 ~ 19:40 이스타
-15:00 ~ 16:25 이스타</td>
-            <td>₩624,200</td>
-            <td><span class="status status-paid">결제완료</span></td>
-          </tr>
-          <tr>
-            <td>숙소</td>
-            <td>원스호텔 후쿠오카</td>
-            <td>2026-06-23 ~ 2026-06-25</td>
-            <td>체크인 15시, 체크아웃 10시</td>
-            <td></td>
-            <td><span class="status status-done">예약완료</span></td>
-          </tr>
-          <tr>
-            <td>이심</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td><span class="status status-plan"></span></td>
-          </tr>
-          <tr>
-            <td>다이슨</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td><span class="status status-todo">해야함</span></td>
-          </tr>
-          <tr>
-            <td>패스</td>
-            <td>산큐패스 2일권</td>
-            <td></td>
-            <td></td>
-            <td>₩130,000</td>
-            <td><span class="status status-todo">해야함</span></td>
-          </tr>
-          <tr>
-            <td>환전</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td><span class="status status-plan"></span></td>
-          </tr></tbody>
-      </table>
-    </div>
-    <div class="card">
-      <h3>💡 기본 정보</h3>
-      <table class="res-table">
-        <thead><tr><th>항목</th><th>내용</th></tr></thead>
-        <tbody>
-          <tr><td>여행 기간</td><td>2026년 6월 20일 (토) — 6월 25일 (목) · 5박 6일</td></tr>
-          <tr><td>멤버</td><td>효진, 창현</td></tr>
-          <tr><td>주 교통</td><td>지하철 · 버스 · 신칸센 (시모노세키 이동 시)</td></tr>
-          <tr><td>환전</td><td>엔화 현금 필수 (가라토 이치바, 관문 페리 등)</td></tr>
-        </tbody>
-      </table>
-    </div></div>
-<div class="panel" id="packing"><div class="day-header"><h2>🎒 준비물 체크리스트</h2></div><div class="card"><h3>👤 효진</h3><ul class="pack-list"><li class=""><input type="checkbox" id="pack_효진_0"  onchange="saveCheck(this)"><label for="pack_효진_0">돼지코</label></li><li class=""><input type="checkbox" id="pack_효진_1"  onchange="saveCheck(this)"><label for="pack_효진_1">카드/현금</label></li></ul></div><div class="card"><h3>👤 창현</h3><ul class="pack-list"><li class=""><input type="checkbox" id="pack_창현_0"  onchange="saveCheck(this)"><label for="pack_창현_0">충전기/보조배터리</label></li></ul></div></div>
-
-  </div>
-
-  <script>
-    function switchTab(id) {
-      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      event.currentTarget.classList.add('active');
-    }
-    function saveCheck(el) {
-      const state = {};
-      document.querySelectorAll('input[type="checkbox"]').forEach(cb => { state[cb.id] = cb.checked; });
-      localStorage.setItem('fukuoka_pack', JSON.stringify(state));
-    }
-    (function loadChecks() {
-      const data = localStorage.getItem('fukuoka_pack');
-      if (!data) return;
-      const state = JSON.parse(data);
-      Object.entries(state).forEach(([id, checked]) => {
-        const el = document.getElementById(id);
-        if (el) el.checked = checked;
-      });
-    })();
-  </script>
+<div class="hero">
+<h1>🧳 후쿠오카 여행</h1>
+<p>2026년 6월 20일(토) — 6월 25일(목) · 5박 6일</p>
+<p style="margin-top:.5rem;font-size:.82rem;opacity:.6">with 효진 + 창현 · 프레지던트 호텔 하카다</p>
+</div>
+<div class="container">
+<div class="day">
+<div class="day-header" style="background:#e8f5e9">
+<div><div class="day-title">6월 20일 (토) — 도착일</div><div class="day-sub">인천 출발 → 후쿠오카 도착 → 체크인</div></div>
+<span class="badge" style="background:#a5d6a7;color:#1b5e20">도착</span>
+</div>
+<table><tr><th>시간</th><th>장소/일정</th><th>메모</th><th>예산</th></tr>
+<tr><td class="time">15:00</td><td class="place"><span class="tag t-food">식사</span>공항 라운지 점심</td><td class="memo">출국 전 공항 라운지 이용</td><td class="budget">₩34,000</td></tr>
+<tr><td class="time">20:00</td><td class="place"><span class="tag t-hotel">숙소</span>프레지던트 호텔 하카다 체크인</td><td class="memo">하카타역 도보 5분 · 1-23-5 Hakata Ekimae<br><a href="https://blog.naver.com/ggm0724/224214399377">숙소 블로그 리뷰</a></td><td class="budget">₩63,895</td></tr>
+</table>
+<div class="note">📌 해야할 것: 공항에서 산큐패스 수령!</div>
+</div>
+<div class="day">
+<div class="day-header" style="background:#e3f2fd">
+<div><div class="day-title">6월 21일 (일) — 시모노세키·모지코 당일치기</div><div class="day-sub">하카타 → 시모노세키 → 모지코 → 기타큐슈 → 하카타</div><div class="outfit">👗 흰티 + 하늘색 하의(연청)</div></div>
+<span class="badge" style="background:#90caf9;color:#0d47a1">근교</span>
+</div>
+<table><tr><th>시간</th><th>장소/일정</th><th>메모</th><th>예산</th></tr>
+<tr><td class="time">08:18</td><td class="place"><span class="tag t-transit">이동</span>하카타 → 시모노세키</td><td class="memo">하카타역 버스 탑승 <span class="warn">현금 필수!</span><br><a href="https://blog.naver.com/skklove32/224065507603">규슈패스로 시모노세키</a></td><td class="budget">산큐패스</td></tr>
+<tr><td class="time">11:00</td><td class="place"><span class="tag t-food">🍣 스시</span>가라토 이치바</td><td class="memo">★스시는 시모노세키에서! 금·토·일 한정 직판<br>초밥 300~500엔 / 복어 초밥도 여기서<br>📍 야마구치현 시모노세키시 가라토초 5-50<br><span class="warn">일요일 9시 오픈!</span></td><td class="budget">₩30,000</td></tr>
+<tr><td class="time">11:30</td><td class="place"><span class="tag t-walk">관광</span>아카마신궁 + 간몬해저터널</td><td class="memo">새하얀 건물·붉은 기둥 / 해저터널 도보 15~20분 (무료)</td><td class="budget">무료</td></tr>
+<tr><td class="time">12:00</td><td class="place"><span class="tag t-walk">관광</span>모지코 레트로 지구</td><td class="memo">메이지~다이쇼 항구 건물 / 시모노세키에서 페리 5분<br>🍌 바나나 아이스크림 · 야끼 카레</td><td class="budget">산큐패스</td></tr>
+<tr><td class="time">15:00</td><td class="place"><span class="tag t-transit">이동</span>기타큐슈 → 하카타</td><td class="memo">지하철 이동 (생략 가능)</td><td class="budget">산큐패스</td></tr>
+<tr><td class="time">18:00</td><td class="place"><span class="tag t-walk">구경</span>캐널시티 + 한큐백화점 옥상</td><td class="memo">버스정류장 위 스티커 사진 📸 / 옥상 노을 🌆</td><td class="budget">산큐패스</td></tr>
+<tr><td class="time">18:00~</td><td class="place"><span class="tag t-food">🍔 저녁</span>카와미야 함바그</td><td class="memo">웨이팅 앱 등록 후 캐널시티 구경하다 오기</td><td class="budget">₩60,000</td></tr>
+</table>
+</div>
+<div class="day">
+<div class="day-header" style="background:#fff8e1">
+<div><div class="day-title">6월 22일 (월) — 하카타 맛집 투어</div><div class="day-sub">빵스톡 명란바게트 → 신신라멘 → 모츠나베 이치후지</div></div>
+<span class="badge" style="background:#ffe082;color:#5d4037">맛집</span>
+</div>
+<table><tr><th>시간</th><th>장소/일정</th><th>메모</th><th>예산</th></tr>
+<tr><td class="time">08:00~</td><td class="place"><span class="tag t-food">🥐 아침</span>빵스톡 명란바게트</td><td class="memo">공원에서 08:00 오픈 / 아침 산책 겸</td><td class="budget">-</td></tr>
+<tr><td class="time">점심</td><td class="place"><span class="tag t-food">🍜 점심</span>신신라멘</td><td class="memo">후쿠오카 대표 돈코츠 라멘 <span class="warn">웨이팅 있음!</span></td><td class="budget">-</td></tr>
+<tr><td class="time">저녁</td><td class="place"><span class="tag t-food">🫕 저녁</span>모츠나베 이치후지 하카타점</td><td class="memo">국산 대창 / 챔퐁면 시메 필수</td><td class="budget">-</td></tr>
+</table>
+</div>
+<div class="day">
+<div class="day-header" style="background:#fce4ec">
+<div><div class="day-title">6월 23일 (화) — 유후인 당일치기 + 숙소 이동</div><div class="day-sub">하카타 → 유후인 → 이즈미소바 → 긴린코 → 누루카와온천 → 야키니꾸</div><div class="outfit">👗 반팔티(맞춘거) + 반바지(아이보리or베이지)</div></div>
+<span class="badge" style="background:#f48fb1;color:#880e4f">유후인</span>
+</div>
+<table><tr><th>시간</th><th>장소/일정</th><th>메모</th><th>예산</th></tr>
+<tr><td class="time">08:00</td><td class="place"><span class="tag t-food">🍚 아침</span>키스이마루</td><td class="memo">아침 식사</td><td class="budget">₩25,000</td></tr>
+<tr><td class="time">08:48</td><td class="place"><span class="tag t-transit">이동</span>하카타 → 유후인 버스</td><td class="memo">버스 탑승 → 11:00 유후인 도착</td><td class="budget">산큐패스</td></tr>
+<tr><td class="time">11:00</td><td class="place"><span class="tag t-walk">산책</span>유후인 유노츠보 거리</td><td class="memo">밀히 치즈케이크 / 플로럴빌리지 구경</td><td class="budget">-</td></tr>
+<tr><td class="time">12:30</td><td class="place"><span class="tag t-food">🍜 점심</span>이즈미 소바</td><td class="memo">유후인 명물 소바</td><td class="budget">₩40,000</td></tr>
+<tr><td class="time">~14:30</td><td class="place"><span class="tag t-walk">산책</span>긴린코 호수</td><td class="memo">온천수 섞인 에메랄드 호수 산책</td><td class="budget">무료</td></tr>
+<tr><td class="time">14:30</td><td class="place"><span class="tag t-walk">♨ 온천</span>누루카와 온천</td><td class="memo">유후인 당일 온천</td><td class="budget">₩12,000</td></tr>
+<tr><td class="time">16:00</td><td class="place"><span class="tag t-transit">이동</span>유후인 → 하카타</td><td class="memo">버스 <span class="chip">5/23 예약 완료</span></td><td class="budget">산큐패스</td></tr>
+<tr><td class="time">18:00</td><td class="place"><span class="tag t-hotel">이동</span>숙소 이동 + 장보기</td><td class="memo"></td><td class="budget">₩50,000</td></tr>
+<tr><td class="time">20:00</td><td class="place"><span class="tag t-food">🥩 저녁</span>야키니꾸</td><td class="memo">소고기 구워먹기 🔥</td><td class="budget">-</td></tr>
+</table>
+</div>
+<div class="day">
+<div class="day-header" style="background:#e8eaf6">
+<div><div class="day-title">6월 24일 (수) — 오호리 런닝 + 다이묘 쇼핑 + 오코노미야끼</div><div class="day-sub">런닝 → 스타벅스 → 빵스톡 → 다이묘거리 → 아사야마 → 모모치 노을 → 꼬치구이</div></div>
+<span class="badge" style="background:#9fa8da;color:#1a237e">쇼핑+맛집</span>
+</div>
+<table><tr><th>시간</th><th>장소/일정</th><th>메모</th><th>예산</th></tr>
+<tr><td class="time">07:30</td><td class="place"><span class="tag t-walk">🏃 런닝</span>오호리공원</td><td class="memo">숙소 → 오호리공원 / 둘레 2km 런닝코스</td><td class="budget">-</td></tr>
+<tr><td class="time">아침</td><td class="place"><span class="tag t-food">☕ 아침</span>오호리공원 스타벅스</td><td class="memo">공원뷰 스타벅스 아침</td><td class="budget">₩15,000</td></tr>
+<tr><td class="time">10:00</td><td class="place"><span class="tag t-food">🥐 간식</span>빵스톡 명란바게트</td><td class="memo">포장해오기</td><td class="budget">₩10,000</td></tr>
+<tr><td class="time">11:00</td><td class="place"><span class="tag t-shop">🛍 쇼핑</span>다이묘 거리</td><td class="memo">빈티지샵 · 로컬 편집샵 골목 탐방</td><td class="budget">-</td></tr>
+<tr><td class="time">12:00</td><td class="place"><span class="tag t-food">🍳 점심</span>아사야마 오코노미야끼</td><td class="memo">현지인 철판요리 오코노미야끼</td><td class="budget">₩25,000</td></tr>
+<tr><td class="time">18:00</td><td class="place"><span class="tag t-walk">🌅 노을</span>모모치 해변</td><td class="memo">자전거 타고 가기 🚲 / 후쿠오카 타워 + 바다 노을</td><td class="budget">-</td></tr>
+<tr><td class="time">20:00</td><td class="place"><span class="tag t-food">🍢 저녁</span>꼬치구이</td><td class="memo">집 근처 돌아다니다 들르기</td><td class="budget">효진 개인돈</td></tr>
+</table>
+</div>
+<div class="day">
+<div class="day-header" style="background:#efebe9">
+<div><div class="day-title">6월 25일 (목) — 귀국일</div><div class="day-sub">아침 풀풀 → 점심 돈까스 → 공항</div></div>
+<span class="badge" style="background:#bcaaa4;color:#3e2723">귀국</span>
+</div>
+<table><tr><th>시간</th><th>장소/일정</th><th>메모</th><th>예산</th></tr>
+<tr><td class="time">아침</td><td class="place"><span class="tag t-food">🌸 아침</span>풀풀~!~!</td><td class="memo">마지막 아침 여유롭게</td><td class="budget">-</td></tr>
+<tr><td class="time">점심</td><td class="place"><span class="tag t-food">🍱 점심</span>돈까스</td><td class="memo">마지막 점심은 돈까스!</td><td class="budget">-</td></tr>
+<tr><td class="time">13:00</td><td class="place"><span class="tag t-transit">✈ 귀국</span>후쿠오카 국제공항</td><td class="memo">하카타역 → 공항 지하철 5분 / 260엔</td><td class="budget">-</td></tr>
+</table>
+</div>
+<p style="text-align:center;font-size:.75rem;color:#999;margin:2rem 0 3rem">Updated from Notion · 2026.05.02 · pjin-ky</p>
+</div>
 </body>
 </html>
